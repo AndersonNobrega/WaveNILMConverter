@@ -12,7 +12,7 @@ class AmpdsConverter():
         self.h5_file = h5_file
         self.dat_path = dat_path
         self.dir_path = dir_path
-        self.values = values = empty((data_len, measuraments, features))
+        self.values = empty((data_len, measuraments, features))
 
     def read_dataset(self, file):
         if Path(file).is_file():
