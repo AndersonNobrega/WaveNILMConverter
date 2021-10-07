@@ -6,6 +6,8 @@ from pathlib import Path
 from pickle import dump
 from os import path
 
+import json
+
 
 class AmpdsConverter():
     def __init__(self, dir_path, h5_file='/data/h5/AMPds2.h5', dat_path='/data/dat/ampds', data_len=1051200, measuraments=3, features=2):
@@ -35,9 +37,10 @@ class AmpdsConverter():
             self.values[i][1] = [row._4, row._1]  # 4 - Active Power, 1 - Reactive Power
 
     def create_dat_file(self, df, file_name):
-        if not path.isdir(self.dir_path + self.dat_path):
-            Path(self.dir_path + self.dat_path).mkdir(parents=True, exist_ok=True)
-        dat_file = open(self.dir_path + self.dat_path + '/' + file_name, 'wb')
+        base_path = self.dir_path + self.dat_path
+        if not path.isdir(base_path):
+            Path(base_path).mkdir(parents=True, exist_ok=True)
+        dat_file = open(base_path + '/' + file_name, 'wb')
 
         file_values = copy(self.values)
 
@@ -46,6 +49,9 @@ class AmpdsConverter():
 
         dump(file_values, dat_file)
         dat_file.close()
+
+        appliance_name = path.splitext(file_name)[0]
+        self.create_metadata('building1', appliance_name, len(df), (base_path + '/' + appliance_name + '.json'))
 
     def run_processes(self, df_list):
         processes = list()
@@ -56,6 +62,16 @@ class AmpdsConverter():
 
         for process in processes:
             process.join()
+
+    def create_metadata(self, building, appliance, data_len, path):
+        data = {
+            'building': building,
+            'appliance': appliance,
+            'data_len': data_len,
+        }
+
+        with open(path, 'w') as outfile:
+            json.dump(data, outfile)
 
     def convert_df(self):
         elec = (list(self.read_dataset(self.dir_path + self.h5_file).buildings.values())[0]).elec
