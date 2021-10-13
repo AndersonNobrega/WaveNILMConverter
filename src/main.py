@@ -22,9 +22,9 @@ def main():
         logging.info('AMPDS dataset conversion completed.')
 
     if args['iawe']:
-        logging.info('Starting AMPDS dataset conversion.')
+        logging.info('Starting iAWE dataset conversion.')
         IaweConverter(dir_path=path.realpath(path.join(getcwd(), path.dirname(__file__)))[:-4]).convert_df()
-        logging.info('AMPDS dataset conversion completed.')
+        logging.info('iAWE dataset conversion completed.')
     
     if args['eco']:
         logging.info('Starting ECO dataset conversion.')

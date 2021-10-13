@@ -5,19 +5,27 @@ wavenilm_env() {
     source $WAVENILM_PATH/bin/activate
 }
 
+deactivate_env() {
+    deactivate
+}
+
 anaconda_env() {
     echo 'Changing to Anaconda env'
     source $HOME/anaconda3/bin/activate
     conda activate nilmtk-practice
 }
 
+deactivate_anaconda_env() {
+    conda deactivate
+}
+
 run_wavenilm() {
-    wavenilm_env
     base_path=$1
     data_path=$2
     results_path=$3
     epochs=$4
     for filename in $data_path/*.dat; do
+
         data_len=`cat $base_path/$(basename "${filename%.*}").json | jq '.data_len'`
         mkdir --parents $results_path/$epochs
         (cd $WAVENILM_PATH/src
@@ -39,25 +47,84 @@ remove_dat_files() {
     done
 }
 
+# Constants
 WAVENILM_PATH=$HOME/envs/wavenilm
 DATA_PATH=$WAVENILM_PATH/data
-AMPDS_PATH=$HOME/ProgrammingProjects/College/DatasetConverter/data/dat/ampds/
+PYTHONPATH=$WAVENILM_PATH/src export PYTHONPATH
+EPOCHS=(1)
+
+# AMPDS Variables
+AMPDS_PATH=$HOME/ProgrammingProjects/College/DatasetConverter/data/dat/ampds
 AMPDS_RESULTS=$HOME/Documents/Results/AMPds
 
-PYTHONPATH=$WAVENILM_PATH/src export PYTHONPATH
-EPOCHS=(1 5 15 30)
+# ECO Variables
+ECO_PATH=$HOME/ProgrammingProjects/College/DatasetConverter/data/dat/eco
+ECO_RESULTS=$HOME/Documents/Results/eco
+
+# iAWE Variables
+IAWE_PATH=$HOME/ProgrammingProjects/College/DatasetConverter/data/dat/iawe
+IAWE_RESULTS=$HOME/Documents/Results/iawe
+
 
 # AMPDS
+# anaconda_env
+# python3 $HOME/ProgrammingProjects/College/DatasetConverter/src/main.py --ampds
+# deactivate_anaconda_env
+
+# move_dat_files $AMPDS_PATH
+
+# wavenilm_env
+# for epoch in "${EPOCHS[@]}"; do
+#     run_wavenilm $AMPDS_PATH $DATA_PATH $AMPDS_RESULTS $epoch
+# done
+# deactivate_env
+
+# remove_dat_files $AMPDS_PATH
+
+# ECO
+# Building 1
+<<com
 anaconda_env
-python3 $HOME/ProgrammingProjects/College/DatasetConverter/src/main.py -a
+python3 $HOME/ProgrammingProjects/College/DatasetConverter/src/main.py --eco 1
+deactivate_anaconda_env
 
-move_dat_files $AMPDS_PATH
+move_dat_files $ECO_PATH/building1
 
+wavenilm_env
 for epoch in "${EPOCHS[@]}"; do
-    run_wavenilm $AMPDS_PATH $DATA_PATH $AMPDS_RESULTS $epoch
+    run_wavenilm $ECO_PATH/building1 $DATA_PATH $ECO_RESULTS/building1 $epoch
 done
+deactivate_env
 
-remove_dat_files $AMPDS_PATH
+remove_dat_files $ECO_PATH/building1
 
-#python3 $HOME/ProgrammingProjects/College/DatasetConverter/src/main.py -e 1
-#rm -rf $HOME/ProgrammingProjects/College/DatasetConverter/data/dat/eco/building1
+# Building 2
+anaconda_env
+python3 $HOME/ProgrammingProjects/College/DatasetConverter/src/main.py --eco 2
+deactivate_anaconda_env
+
+move_dat_files $ECO_PATH/building2
+
+wavenilm_env
+for epoch in "${EPOCHS[@]}"; do
+    run_wavenilm $ECO_PATH/building2 $DATA_PATH $ECO_RESULTS/building2 $epoch
+done
+deactivate_env
+
+remove_dat_files $ECO_PATH/building2
+com
+
+# iAWE
+anaconda_env
+python3 $HOME/ProgrammingProjects/College/DatasetConverter/src/main.py --iawe
+deactivate_anaconda_env
+
+move_dat_files $IAWE_PATH
+
+wavenilm_env
+for epoch in "${EPOCHS[@]}"; do
+    run_wavenilm $IAWE_PATH $DATA_PATH $IAWE_RESULTS $epoch
+done
+deactivate_env
+
+remove_dat_files $IAWE_PATH
