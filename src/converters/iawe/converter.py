@@ -29,6 +29,8 @@ class IaweConverter():
                 return next(elec_meter[appliance].load())
             else:
                 return next(elec_meter.mains().load())
+        elif type(elec_meter) is ElecMeter:
+            return next(elec_meter.load())
 
         raise TypeError('Data is not of a supported type')
 
@@ -67,7 +69,7 @@ class IaweConverter():
     def run_processes(self, df_list, df_aggregate, building_name):
         pool = Pool(processes=cpu_count() // 3)
         for df, file_name in df_list:
-            pool.apply_async(self.create_dat_file, args=(df, df_aggregate, file_name, building_name))
+            pool.apply_async(self.create_dat_file, args=(self.read_df(df)['power'], df_aggregate, file_name, building_name))
         pool.close()
         pool.join()
 
@@ -84,15 +86,17 @@ class IaweConverter():
     def convert_df(self):
         elec = (list(self.read_dataset(self.dir_path + self.h5_file).buildings.values())[0]).elec
 
+        df_aggregate = self.read_df(elec)['power']
+
         df_list = [
-            [self.read_df(elec, 'fridge')['power'], 'fridge.dat'],
-            [self.read_df(elec, 'air conditioner')['power'], 'air_conditioner.dat'],
-            [self.read_df(elec, 'washing machine')['power'], 'washing_machine.dat'],
-            [self.read_df(elec, 'computer')['power'], 'computer.dat'],
-            [self.read_df(elec, 'clothes iron')['power'], 'clothes_iron.dat'],
-            [self.read_df(elec, 'unknown')['power'], 'unknown.dat'],
-            [self.read_df(elec, 'television')['power'], 'television.dat'],
-            [self.read_df(elec, 'wet appliance')['power'], 'wet_appliance.dat'],
+            [elec['fridge'], 'fridge.dat'],
+            [elec['air conditioner'], 'air_conditioner.dat'],
+            [elec['washing machine'], 'washing_machine.dat'],
+            [elec['computer'], 'computer.dat'],
+            [elec['clothes iron'], 'clothes_iron.dat'],
+            [elec['unknown'], 'unknown.dat'],
+            [elec['television'], 'television.dat'],
+            [elec['wet appliance'], 'wet_appliance.dat'],
         ]
 
-        self.run_processes(df_list, self.read_df(elec)['power'], 'building1')
+        self.run_processes(df_list, df_aggregate, 'building1')
