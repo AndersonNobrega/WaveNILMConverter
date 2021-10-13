@@ -2,11 +2,12 @@ from multiprocessing import cpu_count, Pool
 from nilmtk.elecmeter import ElecMeter
 from nilmtk.metergroup import MeterGroup
 from nilmtk import DataSet
-from numpy import empty
+from numpy import empty, isnan
 from pathlib import Path
 from pickle import dump
 from os import path
 
+import numpy as np
 import json
 import logging
 
@@ -38,11 +39,16 @@ class EcoConverter():
 
     def populate_aggregate_data(self, df, values, max_len):
         i = 0
+        last_value = 0
         for row in df.itertuples():
             if i >= max_len:
                 break
             if row.Index.to_pydatetime().timestamp() == values[i][0][0]:
-                values[i][1] = [row._1]  # 1 - Active Power
+                if np.isnan(row.active):
+                    values[i][1] = [last_value + values[i][2]]
+                else:
+                    last_value = row.active
+                    values[i][1] = [row.active]
                 i += 1
 
         return values
@@ -54,12 +60,12 @@ class EcoConverter():
 
         dat_file = open(base_path + '/' + file_name, 'wb')
 
-        file_values = empty((len(df), self.measuraments, self.features))
+        file_values = np.empty((len(df), self.measuraments, self.features))
 
         for i, row in enumerate(df.itertuples()):
             file_values[i][0] = [row.Index.to_pydatetime().timestamp()]
-            file_values[i][2] = [row._1] # 1 - Active Power
-        
+            file_values[i][2] = [row.active]
+
         file_values = self.populate_aggregate_data(df_aggregate, file_values, len(df))
 
         dump(file_values, dat_file)
@@ -71,7 +77,7 @@ class EcoConverter():
     def run_processes(self, df_list, df_aggregate, building_name):
         pool = Pool(processes=cpu_count() // 3)
         for df, file_name in df_list:
-            pool.apply_async(self.create_dat_file, args=(self.read_df(df), df_aggregate, file_name, building_name))
+            pool.apply_async(self.create_dat_file, args=(self.read_df(df)['power'], df_aggregate, file_name, building_name))
         pool.close()
         pool.join()
 
@@ -90,7 +96,7 @@ class EcoConverter():
             if value == 1:
                 logging.info('Converting data from building 1...')
                 elec = self.read_dataset(self.dir_path + self.h5_file).buildings[1].elec
-                df_aggregate = next(elec.mains().load())
+                df_aggregate = next(elec.mains().load())['power']
 
                 df_building = [
                     [elec[4], 'fridge.dat'],
@@ -107,7 +113,7 @@ class EcoConverter():
             elif value == 2:
                 logging.info('Converting data from building 2...')
                 elec = self.read_dataset(self.dir_path + self.h5_file).buildings[2].elec
-                df_aggregate = next(elec.mains().load())
+                df_aggregate = next(elec.mains().load())['power']
 
                 df_building = [
                     [elec[4], 'tablet_computer_charger.dat'],
@@ -129,7 +135,7 @@ class EcoConverter():
             elif value == 3:
                 logging.info('Converting data from building 3...')
                 elec = self.read_dataset(self.dir_path + self.h5_file).buildings[3].elec
-                df_aggregate = next(elec.mains().load())
+                df_aggregate = next(elec.mains().load())['power']
 
                 df_building = [
                     [elec[4], 'laptop_computer.dat'],
@@ -146,7 +152,7 @@ class EcoConverter():
             elif value == 4:
                 logging.info('Converting data from building 4...')
                 elec = self.read_dataset(self.dir_path + self.h5_file).buildings[4].elec
-                df_aggregate = next(elec.mains().load())
+                df_aggregate = next(elec.mains().load())['power']
 
                 df_building = [
                     [elec[4], 'fridge.dat'],
@@ -164,7 +170,7 @@ class EcoConverter():
             elif value == 5:
                 logging.info('Converting data from building 5...')
                 elec = self.read_dataset(self.dir_path + self.h5_file).buildings[5].elec
-                df_aggregate = next(elec.mains().load())
+                df_aggregate = next(elec.mains().load())['power']
 
                 df_building = [
                     [elec[4], 'laptop_computer.dat'],
@@ -182,7 +188,7 @@ class EcoConverter():
             elif value == 6:
                 logging.info('Converting data from building 6...')
                 elec = self.read_dataset(self.dir_path + self.h5_file).buildings[6].elec
-                df_aggregate = next(elec.mains().load())
+                df_aggregate = next(elec.mains().load())['power']
 
                 df_building = [
                     [elec[4], 'lamp.dat'],
