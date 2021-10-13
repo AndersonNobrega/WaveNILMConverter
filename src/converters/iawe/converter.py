@@ -36,11 +36,16 @@ class IaweConverter():
 
     def populate_aggregate_data(self, df, values, max_len):
         i = 0
+        last_values = [0, 0]
         for row in df.itertuples():
             if i >= max_len:
                 break
             if row.Index.to_pydatetime().timestamp() == values[i][0][0]:
-                values[i][1] = [row.active, row.reactive]
+                if np.isnan(row.active):
+                    values[i][1] = [last_values[0] + values[i][2][0], last_values[1] + values[i][2][1]]
+                else:
+                    last_values = [row.active, row.reactive]
+                    values[i][1] = [row.active, row.reactive]
                 i += 1
 
         return values
