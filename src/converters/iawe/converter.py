@@ -1,15 +1,16 @@
+import json
 from multiprocessing import cpu_count, Pool
-from nilmtk.elecmeter import ElecMeter
-from nilmtk.metergroup import MeterGroup
-from nilmtk import DataSet
+from os import path
 from pathlib import Path
 from pickle import dump
-from os import path
 
 import numpy as np
-import json
+from nilmtk import DataSet
+from nilmtk.elecmeter import ElecMeter
+from nilmtk.metergroup import MeterGroup
 
-class IaweConverter():
+
+class IaweConverter:
     def __init__(self, dir_path, h5_file='/data/h5/iAWE.h5', dat_path='/data/dat/iawe', measuraments=3, features=2):
         self.h5_file = h5_file
         self.dat_path = dat_path
@@ -74,7 +75,8 @@ class IaweConverter():
     def run_processes(self, df_list, df_aggregate, building_name):
         pool = Pool(processes=cpu_count() // 3)
         for df, file_name in df_list:
-            pool.apply_async(self.create_dat_file, args=(self.read_df(df)['power'], df_aggregate, file_name, building_name))
+            pool.apply_async(self.create_dat_file,
+                             args=(self.read_df(df)['power'], df_aggregate, file_name, building_name))
         pool.close()
         pool.join()
 
