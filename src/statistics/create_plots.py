@@ -8,7 +8,7 @@ def populate_dict(path, data):
     for epoch in ['1', '5', '15', '30']:
         for appliance in data.keys():
             json_file = read_json(path + '/' + epoch + '/' + appliance + '.json')
-            data[appliance].append(json_file['accuracy'])
+            data[appliance].append(round(json_file['accuracy'], 2))
 
     return data
 
@@ -19,7 +19,7 @@ def read_json(json_path):
 
 
 def plot_line_graph(dict, title, path):
-    plt.subplots(figsize=(20, 10))
+    plt.subplots(figsize=(10, 8))
     for key in dict.keys():
         plt.xticks(range(len(dict[key])), [1, 5, 15, 30])
         plt.grid(True)
@@ -56,6 +56,11 @@ def main():
         'washing_machine': []
     }
 
+    # air_handling_unit, audio_system, dish_washer, HTPC, kettle, lamp, laptop_computer, stove, television - Problem with data
+    eco_building2_data = {
+        'freezer': [], 'fridge': [], 'tablet_computer_charger': []
+    }
+
     # fridge - Problem with data
     iawe_data = {
         'wet_appliance': [], 'air_conditioner': [], 'computer': [], 'clothes_iron': [],
@@ -64,6 +69,7 @@ def main():
 
     ampds_data = populate_dict(ampds_path, ampds_data)
     eco_building1_data = populate_dict(eco_path + '/building1', eco_building1_data)
+    eco_building2_data = populate_dict(eco_path + '/building2', eco_building2_data)
     iawe_data = populate_dict(iawe_path, iawe_data)
 
     try:
@@ -73,6 +79,7 @@ def main():
 
     plot_line_graph(ampds_data, 'AMPds Dataset', plot_path + '/ampds_line_plot.png')
     plot_line_graph(eco_building1_data, 'ECO Dataset - Building 1', plot_path + '/eco_building1_line_plot.png')
+    plot_line_graph(eco_building2_data, 'ECO Dataset - Building 2', plot_path + '/eco_building2_line_plot.png')
     plot_line_graph(iawe_data, 'iAWE Dataset', plot_path + '/iawe_line_plot.png')
 
 
