@@ -20,9 +20,9 @@ def main():
     args = vars(parser.parse_args())
 
     if args['ampds']:
-        logging.info('Starting AMPDS dataset conversion.')
+        logging.info('Starting AMPds dataset conversion.')
         AmpdsConverter(dir_path=path.realpath(path.join(getcwd(), path.dirname(__file__)))[:-4]).convert_df()
-        logging.info('AMPDS dataset conversion completed.')
+        logging.info('AMPds dataset conversion completed.')
 
     if args['iawe']:
         logging.info('Starting iAWE dataset conversion.')

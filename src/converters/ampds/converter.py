@@ -82,13 +82,25 @@ class AmpdsConverter:
         elec = (list(self.read_dataset(self.dir_path + self.h5_file).buildings.values())[0]).elec
 
         df_list = [
-            [elec['light'], 'light.dat'],
-            [elec['unknown'], 'unknown.dat'],
-            [elec['sockets'], 'sockets.dat'],
-            [elec['fridge'], 'fridge.dat'],
-            [elec['heat pump'], 'heat_pump.dat'],
-            [elec['television'], 'television.dat'],
-            [elec['electric oven'], 'electric_oven.dat'],
+            [elec[2], 'north_bedroom.dat'],
+            [elec[3], 'master_bedroom.dat'],
+            [elec[4], 'partial_plugs.dat'],
+            [elec[5], 'clothes_dryer.dat'],
+            [elec[6], 'clothes_washer.dat'],
+            [elec[7], 'dining_room_plugs.dat'],
+            [elec[8], 'dishwasher.dat'],
+            [elec[9], 'eletronics_workbench.dat'],
+            [elec[10], 'security_network_equipment.dat'],
+            [elec[11], 'air_furnace_thermostat.dat'],
+            [elec[12], 'sub_panel.dat'],
+            [elec[13], 'heat_pump.dat'],
+            [elec[14], 'hot_water_unit.dat'],
+            [elec[15], 'home_office.dat'],
+            [elec[16], 'outside_plugs.dat'],
+            [elec[17], 'panel_basement.dat'],
+            [elec[18], 'entertainment.dat'],
+            [elec[19], 'utility_plug.dat'],
+            [elec[20], 'electric_oven.dat'],
         ]
 
         self.populate_aggregate_data(self.read_df(elec)['power'])
