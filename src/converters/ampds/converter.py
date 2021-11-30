@@ -1,11 +1,11 @@
 from os import path
 from pickle import dump
 
-from converters.base_converter import Converter
+from converters.base_converter import BaseConverter
 from numpy import empty, copy
 
 
-class AmpdsConverter(Converter):
+class AmpdsConverter(BaseConverter):
     def __init__(self, dir_path, h5_file='/data/h5/AMPds2.h5', dat_path='/data/dat/ampds', data_len=1051200,
                  measuraments=3, features=2):
         super().__init__(dir_path, h5_file, dat_path, data_len, measuraments, features)

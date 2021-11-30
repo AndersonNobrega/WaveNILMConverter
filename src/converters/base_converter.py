@@ -7,9 +7,10 @@ from nilmtk import DataSet
 from nilmtk.elecmeter import ElecMeter
 from nilmtk.metergroup import MeterGroup
 from numpy import empty
+from pandas import DataFrame
 
 
-class Converter:
+class BaseConverter:
     def __init__(self, dir_path, h5_file, dat_path, data_len, measuraments, features):
         self.h5_file = h5_file
         self.dat_path = dat_path
@@ -54,10 +55,10 @@ class Converter:
     def run_processes(self, method_reference, df_list, df_aggregate, building_name):
         pool = Pool(processes=cpu_count() // 3)
         for df, file_name in df_list:
-            if df_aggregate == None:
+            if type(df_aggregate) != DataFrame:
                 pool.apply_async(method_reference, args=(self.read_df(df)['power'], file_name, building_name))
             else:
                 pool.apply_async(method_reference,
-                                 args=(self.read_df(df)['power'], df_aggregate, file_name, building_name))
+                                    args=(self.read_df(df)['power'], df_aggregate, file_name, building_name))
         pool.close()
         pool.join()

@@ -1,39 +1,14 @@
-import json
-from multiprocessing import cpu_count, Pool
+import csv
 from os import path
-from pathlib import Path
 from pickle import dump
 
 import numpy as np
-from nilmtk import DataSet
-from nilmtk.elecmeter import ElecMeter
-from nilmtk.metergroup import MeterGroup
+from converters.base_converter import BaseConverter
 
 
-class IaweConverter:
+class IaweConverter(BaseConverter):
     def __init__(self, dir_path, h5_file='/data/h5/iAWE.h5', dat_path='/data/dat/iawe', measuraments=3, features=2):
-        self.h5_file = h5_file
-        self.dat_path = dat_path
-        self.dir_path = dir_path
-        self.measuraments = measuraments
-        self.features = features
-
-    def read_dataset(self, file):
-        if Path(file).is_file():
-            return DataSet(file)
-
-        raise IOError('Path provided no file')
-
-    def read_df(self, elec_meter, appliance=None):
-        if type(elec_meter) is MeterGroup:
-            if appliance is not None:
-                return next(elec_meter[appliance].load())
-            else:
-                return next(elec_meter.mains().load())
-        elif type(elec_meter) is ElecMeter:
-            return next(elec_meter.load())
-
-        raise TypeError('Data is not of a supported type')
+        super().__init__(dir_path, h5_file, dat_path, 0, measuraments, features)
 
     def populate_aggregate_data(self, df, values, max_len):
         i = 0
@@ -53,10 +28,7 @@ class IaweConverter:
 
     def create_dat_file(self, df, df_aggregate, file_name, building_name):
         base_path = self.dir_path + self.dat_path
-        if not path.isdir(base_path):
-            Path(base_path).mkdir(parents=True, exist_ok=True)
-
-        dat_file = open(base_path + '/' + file_name, 'wb')
+        dat_file = self.return_dat_file_path(base_path, file_name)
 
         file_values = np.empty((len(df), self.measuraments, self.features))
 
@@ -72,23 +44,14 @@ class IaweConverter:
         appliance_name = path.splitext(file_name)[0]
         self.create_metadata(building_name, appliance_name, len(df), (base_path + '/' + appliance_name + '.json'))
 
-    def run_processes(self, df_list, df_aggregate, building_name):
-        pool = Pool(processes=cpu_count() // 3)
-        for df, file_name in df_list:
-            pool.apply_async(self.create_dat_file,
-                             args=(self.read_df(df)['power'], df_aggregate, file_name, building_name))
-        pool.close()
-        pool.join()
+    def create_csv(self, df):
+        with open('/home/anderson/Documents/40_ac.csv', 'w') as f:
+            writer = csv.writer(f, delimiter=';')
 
-    def create_metadata(self, building, appliance, data_len, path):
-        data = {
-            'building': building,
-            'appliance': appliance,
-            'data_len': data_len,
-        }
-
-        with open(path, 'w') as outfile:
-            json.dump(data, outfile)
+            writer.writerow(['Timestamp', 'PT', 'PA', 'PB', 'PC', 'QT', 'QA', 'QB', 'QC', 'UrmsA'])
+            for row in df:
+                new_row = [row[0][0], row[2][0], row[2][0], 0, 0, row[2][1], row[2][1], 0, 0, row[2][2]]
+                writer.writerow(new_row)
 
     def convert_df(self):
         elec = (list(self.read_dataset(self.dir_path + self.h5_file).buildings.values())[0]).elec
@@ -96,14 +59,15 @@ class IaweConverter:
         df_aggregate = self.read_df(elec)['power']
 
         df_list = [
-            [elec['fridge'], 'fridge.dat'],
-            [elec['air conditioner'], 'air_conditioner.dat'],
-            [elec['washing machine'], 'washing_machine.dat'],
-            [elec['computer'], 'computer.dat'],
-            [elec['clothes iron'], 'clothes_iron.dat'],
-            [elec['unknown'], 'unknown.dat'],
-            [elec['television'], 'television.dat'],
-            [elec['wet appliance'], 'wet_appliance.dat'],
+            [elec[3], 'fridge.dat'],
+            [elec[4], 'air_conditioner_1.dat'],
+            [elec[5], 'air_conditioner_2.dat'],
+            [elec[6], 'washing_machine.dat'],
+            [elec[7], 'laptop_computer.dat'],
+            [elec[8], 'clothes_iron.dat'],
+            [elec[9], 'kitchen_outlets.dat'],
+            [elec[10], 'television.dat'],
+            [elec[11], 'water_filter.dat'],
         ]
 
-        self.run_processes(df_list, df_aggregate, 'building1')
+        self.run_processes(self.create_dat_file, df_list, df_aggregate, 'building1')

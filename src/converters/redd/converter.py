@@ -1,40 +1,14 @@
-import json
 import logging
-from multiprocessing import cpu_count, Pool
 from os import path
-from pathlib import Path
 from pickle import dump
 
 import numpy as np
-from nilmtk import DataSet
-from nilmtk.elecmeter import ElecMeter
-from nilmtk.metergroup import MeterGroup
+from converters.base_converter import BaseConverter
 
 
-class ReddConverter:
+class ReddConverter(BaseConverter):
     def __init__(self, dir_path, h5_file='/data/h5/REDD.h5', dat_path='/data/dat/red', measuraments=3, features=1):
-        self.h5_file = h5_file
-        self.dat_path = dat_path
-        self.dir_path = dir_path
-        self.measuraments = measuraments
-        self.features = features
-
-    def read_dataset(self, file):
-        if Path(file).is_file():
-            return DataSet(file)
-
-        raise IOError('Path provided no file')
-
-    def read_df(self, elec_meter, appliance=None):
-        if type(elec_meter) is MeterGroup:
-            if appliance is not None:
-                return next(elec_meter[appliance].load())
-            else:
-                return next(elec_meter.mains().load())
-        elif type(elec_meter) is ElecMeter:
-            return next(elec_meter.load())
-
-        raise TypeError('Data is not of a supported type')
+        super().__init__(dir_path, h5_file, dat_path, 0, measuraments, features)
 
     def populate_aggregate_data(self, df, values, max_len):
         i = 0
@@ -53,11 +27,8 @@ class ReddConverter:
         return values
 
     def create_dat_file(self, df, df_aggregate, file_name, building_name):
-        base_path = self.dir_path + self.dat_path + building_name
-        if not path.isdir(base_path):
-            Path(base_path).mkdir(parents=True, exist_ok=True)
-
-        dat_file = open(base_path + '/' + file_name, 'wb')
+        base_path = self.dir_path + self.dat_path
+        dat_file = self.return_dat_file_path(base_path, file_name)
 
         file_values = np.empty((len(df), self.measuraments, self.features))
 
@@ -72,24 +43,6 @@ class ReddConverter:
 
         appliance_name = path.splitext(file_name)[0]
         self.create_metadata(building_name, appliance_name, len(df), (base_path + '/' + appliance_name + '.json'))
-
-    def run_processes(self, df_list, df_aggregate, building_name):
-        pool = Pool(processes=cpu_count() // 3)
-        for df, file_name in df_list:
-            pool.apply_async(self.create_dat_file,
-                             args=(self.read_df(df)['power'], df_aggregate, file_name, building_name))
-        pool.close()
-        pool.join()
-
-    def create_metadata(self, building, appliance, data_len, path):
-        data = {
-            'building': building,
-            'appliance': appliance,
-            'data_len': data_len,
-        }
-
-        with open(path, 'w') as outfile:
-            json.dump(data, outfile)
 
     def convert_df(self, buildings_list):
         # TODO: Verificar por NaN nos agregado
@@ -118,7 +71,7 @@ class ReddConverter:
                     [elec[18], 'light_3.dat'],
                 ]
 
-                self.run_processes(df_building, df_aggregate, '/building1')
+                self.run_processes(self.create_dat_file, df_building, df_aggregate, '/building1')
                 logging.info('Conversion from building 1 finished.')
             elif value == 2:
                 logging.info('Converting data from building 2...')
@@ -137,7 +90,7 @@ class ReddConverter:
                     [elec[11], 'waste_disposal_unit.dat'],
                 ]
 
-                self.run_processes(df_building, df_aggregate, '/building2')
+                self.run_processes(self.create_dat_file, df_building, df_aggregate, '/building2')
                 logging.info('Conversion from building 2 finished.')
             elif value == 3:
                 logging.info('Converting data from building 3...')
@@ -166,7 +119,7 @@ class ReddConverter:
                     [elec[22], 'kitchen_outlets_2.dat'],
                 ]
 
-                self.run_processes(df_building, df_aggregate, '/building3')
+                self.run_processes(self.create_dat_file, df_building, df_aggregate, '/building3')
                 logging.info('Conversion from building 3 finished.')
             elif value == 4:
                 logging.info('Converting data from building 4...')
@@ -193,7 +146,7 @@ class ReddConverter:
                     [elec[20], 'air_conditioner_2.dat'],
                 ]
 
-                self.run_processes(df_building, df_aggregate, '/building4')
+                self.run_processes(self.create_dat_file, df_building, df_aggregate, '/building4')
                 logging.info('Conversion from building 4 finished.')
             elif value == 5:
                 logging.info('Converting data from building 5...')
@@ -225,7 +178,7 @@ class ReddConverter:
                     [elec[26], 'outdoor_outlets_1.dat'],
                 ]
 
-                self.run_processes(df_building, df_aggregate, '/building5')
+                self.run_processes(self.create_dat_file, df_building, df_aggregate, '/building5')
                 logging.info('Conversion from building 5 finished.')
             elif value == 6:
                 logging.info('Converting data from building 6...')
@@ -249,5 +202,5 @@ class ReddConverter:
                     [elec.nested_metergroups()[0], 'air_conditioner.dat'],
                 ]
 
-                self.run_processes(df_building, df_aggregate, '/building6')
+                self.run_processes(self.create_dat_file, df_building, df_aggregate, '/building6')
                 logging.info('Conversion from building 6 finished.')
