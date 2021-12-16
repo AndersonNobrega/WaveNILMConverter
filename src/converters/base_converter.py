@@ -1,4 +1,5 @@
 import json
+from itertools import combinations
 from multiprocessing import cpu_count, Pool
 from os import path
 from pathlib import Path
@@ -11,7 +12,7 @@ from pandas import DataFrame
 
 
 class BaseConverter:
-    def __init__(self, dir_path, h5_file, dat_path, data_len, measuraments, features):
+    def __init__(self, dir_path, h5_file, dat_path, data_len, measuraments, features, single_loads, multiple_loads):
         self.h5_file = h5_file
         self.dat_path = dat_path
         self.dir_path = dir_path
@@ -19,6 +20,8 @@ class BaseConverter:
         self.measuraments = measuraments
         self.features = features
         self.values = empty((data_len, measuraments, features))
+        self.single_loads = single_loads
+        self.multiple_loads = multiple_loads
 
     def return_dat_file_path(self, base_path, file_name):
         if not path.isdir(base_path):
@@ -52,6 +55,40 @@ class BaseConverter:
         with open(path, 'w') as outfile:
             json.dump(data, outfile)
 
+    def all_features_combinations(self, features_list):
+        all_combinations = []
+        for r in range(len(features_list) + 1):
+            combinations_object = combinations(features_list, r)
+            for x in list(combinations_object):
+                if len(x) != 0:
+                    all_combinations.append(list(x))
+
+        return all_combinations
+
+    def rename_index(self, df):
+        df.columns = [' '.join(col).strip() for col in df.columns.values]
+        df.columns = df.columns.str.replace(' ', '_')
+
+        return df
+
+    def return_field_values(self, features_list, row):
+        values_row = []
+        timestamp_row = []
+        if 'active' in features_list:
+            values_row.append(row.power_active)
+            timestamp_row.append(row.Index.to_pydatetime().timestamp())
+        if 'reactive' in features_list:
+            values_row.append(row.power_reactive)
+            timestamp_row.append(row.Index.to_pydatetime().timestamp())
+        if 'current' in features_list:
+            values_row.append(row.current)
+            timestamp_row.append(row.Index.to_pydatetime().timestamp())
+        if 'voltage' in features_list:
+            values_row.append(row.voltage)
+            timestamp_row.append(row.Index.to_pydatetime().timestamp())
+
+        return values_row, timestamp_row
+
     def run_processes(self, method_reference, df_list, df_aggregate, building_name):
         pool = Pool(processes=cpu_count() // 3)
         for df, file_name in df_list:
@@ -59,6 +96,6 @@ class BaseConverter:
                 pool.apply_async(method_reference, args=(self.read_df(df)['power'], file_name, building_name))
             else:
                 pool.apply_async(method_reference,
-                                    args=(self.read_df(df)['power'], df_aggregate, file_name, building_name))
+                                 args=(self.read_df(df)['power'], df_aggregate, file_name, building_name))
         pool.close()
         pool.join()

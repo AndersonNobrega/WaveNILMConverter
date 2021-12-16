@@ -7,8 +7,9 @@ from converters.base_converter import BaseConverter
 
 
 class EcoConverter(BaseConverter):
-    def __init__(self, dir_path, h5_file='/data/h5/ECO.h5', dat_path='/data/dat/eco', measuraments=3, features=1):
-        super().__init__(dir_path, h5_file, dat_path, 0, measuraments, features)
+    def __init__(self, dir_path, h5_file='/data/h5/ECO.h5', dat_path='/data/dat/eco', measuraments=3, features=1,
+                 single_loads=False, multiple_loads=False):
+        super().__init__(dir_path, h5_file, dat_path, 0, measuraments, features, single_loads, multiple_loads)
 
     def populate_aggregate_data(self, df, values, max_len):
         i = 0
@@ -27,8 +28,7 @@ class EcoConverter(BaseConverter):
         return values
 
     def create_dat_file(self, df, df_aggregate, file_name, building_name):
-        base_path = self.dir_path + self.dat_path
-        dat_file = self.return_dat_file_path(base_path, file_name)
+        dat_file = self.return_dat_file_path(self.dat_path, file_name)
 
         file_values = np.empty((len(df), self.measuraments, self.features))
 
@@ -42,7 +42,7 @@ class EcoConverter(BaseConverter):
         dat_file.close()
 
         appliance_name = path.splitext(file_name)[0]
-        self.create_metadata(building_name, appliance_name, len(df), (base_path + '/' + appliance_name + '.json'))
+        self.create_metadata(building_name, appliance_name, len(df), (self.dat_path + '/' + appliance_name + '.json'))
 
     def convert_df(self, buildings_list):
         for value in buildings_list:
