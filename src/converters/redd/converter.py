@@ -28,7 +28,7 @@ class ReddConverter(BaseConverter):
         return values
 
     def create_dat_file(self, df, df_aggregate, file_name, building_name):
-        dat_file = self.return_dat_file_path(self.dat_path, file_name)
+        dat_file = self.return_dat_file_path(self.dat_path + building_name, file_name)
 
         file_values = np.empty((len(df), self.measuraments, self.features))
 
@@ -42,7 +42,7 @@ class ReddConverter(BaseConverter):
         dat_file.close()
 
         appliance_name = path.splitext(file_name)[0]
-        self.create_metadata(building_name, appliance_name, len(df), (self.dat_path + '/' + appliance_name + '.json'))
+        self.create_metadata(building_name, appliance_name, len(df), (self.dat_path + building_name + '/' + appliance_name + '.json'))
 
     def convert_df(self, buildings_list):
         # TODO: Verificar por NaN nos agregado

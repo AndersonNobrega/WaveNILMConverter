@@ -6,7 +6,7 @@
 # REDD
 # Building 1
 anaconda_env
-python3 $HOME/ProgrammingProjects/College/DatasetConverter/src/main.py --redd 1 --dat "$REDD_PATH/building1" -m
+python3 $HOME/ProgrammingProjects/College/DatasetConverter/src/main.py --redd 1 --dat "$REDD_PATH" -m
 deactivate_anaconda_env
 
 move_dat_files "$REDD_PATH/building1"
@@ -24,7 +24,7 @@ remove_sample_folders
 
 # Building 2
 anaconda_env
-python3 $HOME/ProgrammingProjects/College/DatasetConverter/src/main.py --redd 2 --dat "$REDD_PATH/building2" -m
+python3 $HOME/ProgrammingProjects/College/DatasetConverter/src/main.py --redd 2 --dat "$REDD_PATH" -m
 deactivate_anaconda_env
 
 move_dat_files "$REDD_PATH/building2"
@@ -42,7 +42,7 @@ remove_sample_folders
 
 # Building 3
 anaconda_env
-python3 $HOME/ProgrammingProjects/College/DatasetConverter/src/main.py --redd 3 --dat "$REDD_PATH/building3" -m
+python3 $HOME/ProgrammingProjects/College/DatasetConverter/src/main.py --redd 3 --dat "$REDD_PATH" -m
 deactivate_anaconda_env
 
 move_dat_files "$REDD_PATH/building3"
@@ -60,7 +60,7 @@ remove_sample_folders
 
 # Building 4
 anaconda_env
-python3 $HOME/ProgrammingProjects/College/DatasetConverter/src/main.py --redd 4 --dat "$REDD_PATH/building4" -m
+python3 $HOME/ProgrammingProjects/College/DatasetConverter/src/main.py --redd 4 --dat "$REDD_PATH" -m
 deactivate_anaconda_env
 
 move_dat_files "$REDD_PATH/building4"
@@ -78,7 +78,7 @@ remove_sample_folders
 
 # Building 5
 anaconda_env
-python3 $HOME/ProgrammingProjects/College/DatasetConverter/src/main.py --redd 5 --dat "$REDD_PATH/building5" -m
+python3 $HOME/ProgrammingProjects/College/DatasetConverter/src/main.py --redd 5 --dat "$REDD_PATH" -m
 deactivate_anaconda_env
 
 move_dat_files "$REDD_PATH/building5"
@@ -96,7 +96,7 @@ remove_sample_folders
 
 # Building 6
 anaconda_env
-python3 $HOME/ProgrammingProjects/College/DatasetConverter/src/main.py --redd 6 --dat "$REDD_PATH/building6" -m
+python3 $HOME/ProgrammingProjects/College/DatasetConverter/src/main.py --redd 6 --dat "$REDD_PATH" -m
 deactivate_anaconda_env
 
 move_dat_files "$REDD_PATH/building6"

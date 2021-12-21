@@ -6,7 +6,7 @@
 # ECO
 # Building 1
 anaconda_env
-python3 $HOME/ProgrammingProjects/College/DatasetConverter/src/main.py --eco 1 --dat "$ECO_PATH/building1" -m
+python3 $HOME/ProgrammingProjects/College/DatasetConverter/src/main.py --eco 1 --dat "$ECO_PATH" -m
 deactivate_anaconda_env
 
 move_dat_files "$ECO_PATH/building1"
@@ -24,7 +24,7 @@ remove_sample_folders
 
 # Building 2
 anaconda_env
-python3 $HOME/ProgrammingProjects/College/DatasetConverter/src/main.py --eco 2 --dat "$ECO_PATH/building2" -m
+python3 $HOME/ProgrammingProjects/College/DatasetConverter/src/main.py --eco 2 --dat "$ECO_PATH" -m
 deactivate_anaconda_env
 
 move_dat_files "$ECO_PATH/building2"
@@ -42,7 +42,7 @@ remove_sample_folders
 
 # Building 3
 anaconda_env
-python3 $HOME/ProgrammingProjects/College/DatasetConverter/src/main.py --eco 3 --dat "$ECO_PATH/building3" -m
+python3 $HOME/ProgrammingProjects/College/DatasetConverter/src/main.py --eco 3 --dat "$ECO_PATH" -m
 deactivate_anaconda_env
 
 move_dat_files "$ECO_PATH/building3"
@@ -60,7 +60,7 @@ remove_sample_folders
 
 # Building 4
 anaconda_env
-python3 $HOME/ProgrammingProjects/College/DatasetConverter/src/main.py --eco 4 --dat "$ECO_PATH/building4" -m
+python3 $HOME/ProgrammingProjects/College/DatasetConverter/src/main.py --eco 4 --dat "$ECO_PATH" -m
 deactivate_anaconda_env
 
 move_dat_files "$ECO_PATH/building4"
@@ -78,7 +78,7 @@ remove_sample_folders
 
 # Building 5
 anaconda_env
-python3 $HOME/ProgrammingProjects/College/DatasetConverter/src/main.py --eco 5 --dat "$ECO_PATH/building5" -m
+python3 $HOME/ProgrammingProjects/College/DatasetConverter/src/main.py --eco 5 --dat "$ECO_PATH" -m
 deactivate_anaconda_env
 
 move_dat_files "$ECO_PATH/building5"
@@ -96,7 +96,7 @@ remove_sample_folders
 
 # Building 6
 anaconda_env
-python3 $HOME/ProgrammingProjects/College/DatasetConverter/src/main.py --eco 6 --dat "$ECO_PATH/building6" -m
+python3 $HOME/ProgrammingProjects/College/DatasetConverter/src/main.py --eco 6 --dat "$ECO_PATH" -m
 deactivate_anaconda_env
 
 move_dat_files "$ECO_PATH/building6"
