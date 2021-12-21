@@ -3,6 +3,11 @@
 # Import functions and variables
 . $HOME/ProgrammingProjects/College/DatasetConverter/scripts/util/functions.sh
 
+# ECO Variables
+ECO_PATH="/media/anderson/HDD Partition/data/dat/eco"
+ECO_RESULTS=$HOME/Documents/Results/eco
+ECO_NAME=ECO
+
 # ECO
 # Building 1
 anaconda_env

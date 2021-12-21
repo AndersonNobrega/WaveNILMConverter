@@ -3,6 +3,11 @@
 # Import functions and variables
 . $HOME/ProgrammingProjects/College/DatasetConverter/scripts/util/functions.sh
 
+# REDD Variables
+REDD_PATH="/media/anderson/HDD Partition/data/dat/redd"
+REDD_RESULTS=$HOME/Documents/Results/redd
+REDD_NAME=REDD
+
 # REDD
 # Building 1
 anaconda_env

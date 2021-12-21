@@ -76,23 +76,3 @@ NB=([512,128,128,128,1] [512,256,256,128,128,256,256,256,512])
 DEPTH=(5 9)
 # [512,256,256,128,128,256,256,256,512] [256,128,64,16] [512,256,128,64]
 # 9 4 4
-
-# AMPDS Variables
-AMPDS_PATH="/media/anderson/HDD Partition/data/dat/ampds"
-AMPDS_RESULTS=$HOME/Documents/Results/AMPds
-AMPDS_NAME=AMPds
-
-# ECO Variables
-ECO_PATH="/media/anderson/HDD Partition/data/dat/eco"
-ECO_RESULTS=$HOME/Documents/Results/eco
-ECO_NAME=ECO
-
-# iAWE Variables
-IAWE_PATH="/media/anderson/HDD Partition/data/dat/iawe"
-IAWE_RESULTS=$HOME/Documents/Results/iawe
-IAWE_NAME=iAWE
-
-# REDD Variables
-REDD_PATH="/media/anderson/HDD Partition/data/dat/redd"
-REDD_RESULTS=$HOME/Documents/Results/redd
-REDD_NAME=REDD
