@@ -7,7 +7,7 @@ from pathlib import Path
 from nilmtk import DataSet
 from nilmtk.elecmeter import ElecMeter
 from nilmtk.metergroup import MeterGroup
-from numpy import empty
+from numpy import empty, isnan
 from pandas import DataFrame
 
 
@@ -61,12 +61,25 @@ class BaseConverter:
             combinations_object = combinations(features_list, r)
             for x in list(combinations_object):
                 if len(x) != 0:
-                    all_combinations.append(list(x))
+                    if (len(x) == 1 and ('voltage' in x or 'reactive' in x)) or set(x) == set(['reactive', 'voltage']):
+                        continue
+                    else:
+                        all_combinations.append(list(x))
 
         return all_combinations
 
     def rename_index(self, df):
-        df.columns = [' '.join(col).strip() for col in df.columns.values]
+        columns_name = []
+        for col in df.columns.values:
+            columns_name.append([str(value) for value in col if str(value) != 'nan'])
+
+        for i, name in enumerate(columns_name):
+            if 'voltage' in name and len(name) > 1:
+                columns_name[i] = ['voltage']
+            elif 'current' in name and len(name) > 1:
+                columns_name[i] = ['current']
+
+        df.columns = [' '.join(col).strip() for col in columns_name]
         df.columns = df.columns.str.replace(' ', '_')
 
         return df
@@ -75,16 +88,28 @@ class BaseConverter:
         values_row = []
         timestamp_row = []
         if 'active' in features_list:
-            values_row.append(row.power_active)
-            timestamp_row.append(row.Index.to_pydatetime().timestamp())
-        if 'reactive' in features_list:
-            values_row.append(row.power_reactive)
+            if isnan(row.power_active):
+                values_row.append(0)
+            else:
+                values_row.append(row.power_active)
             timestamp_row.append(row.Index.to_pydatetime().timestamp())
         if 'current' in features_list:
-            values_row.append(row.current)
+            if isnan(row.current):
+                values_row.append(0)
+            else:
+                values_row.append(row.current)
+            timestamp_row.append(row.Index.to_pydatetime().timestamp())
+        if 'reactive' in features_list:
+            if isnan(row.power_reactive):
+                values_row.append(0)
+            else:
+                values_row.append(row.power_reactive)
             timestamp_row.append(row.Index.to_pydatetime().timestamp())
         if 'voltage' in features_list:
-            values_row.append(row.voltage)
+            if isnan(row.voltage):
+                values_row.append(0)
+            else:
+                values_row.append(row.voltage)
             timestamp_row.append(row.Index.to_pydatetime().timestamp())
 
         return values_row, timestamp_row
