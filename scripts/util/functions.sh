@@ -37,7 +37,7 @@ run_wavenilm() {
             sample_size=$((($data_len + ($SAMPLE_SIZE_LIMIAR - 1)) / $SAMPLE_SIZE_LIMIAR))
         fi
         (cd $WAVENILM_PATH/src
-        python -m waveNILM with adam verbose=0 data_len=$data_len data_source=$(basename "$filename") dataset_name=$dataset agg_ind=[1] app_inds=[0,1,2,3,4] noise_mode=1 cross_validate=True n_epochs=$epochs val_spl=.15 splice=[1,2,3] batch_size=10 sample_size=$sample_size nb_filters=$config depth=$depth past_window_fraction=1.0 save_flag=False)
+        python -m waveNILM with adam verbose=2 data_len=$data_len data_source=$(basename "$filename") dataset_name=$dataset agg_ind=[1] app_inds=[0,1,2,3,4] noise_mode=1 cross_validate=True n_epochs=$epochs val_spl=.15 splice=[1] batch_size=10 sample_size=$sample_size nb_filters=$config depth=$depth past_window_fraction=1.0 save_flag=False)
     done
 }
 
@@ -71,8 +71,12 @@ SAMPLE_SIZE_LIMIAR=50
 WAVENILM_PATH=$HOME/envs/wavenilm
 DATA_PATH=$WAVENILM_PATH/data
 PYTHONPATH=$WAVENILM_PATH/src export PYTHONPATH
-EPOCHS=(1)
+EPOCHS=(150)
 NB=([512,128,128,128,1] [512,256,256,128,128,256,256,256,512])
 DEPTH=(5 9)
-# [512,256,256,128,128,256,256,256,512] [256,128,64,16] [512,256,128,64]
-# 9 4 4
+
+# Filters configurations to try out:
+# [512,128,128,128,1]
+# [128,256,512,512,256,256]
+# [64,128,256,256,512,512,512,512]
+# [512,256,256,128,128,256,256,256,512]
