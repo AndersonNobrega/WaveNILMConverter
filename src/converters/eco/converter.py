@@ -2,8 +2,8 @@ import logging
 from os import path
 from pickle import dump
 
-import numpy as np
 from converters.base_converter import BaseConverter
+from numpy import empty, isnan
 
 
 class EcoConverter(BaseConverter):
@@ -18,7 +18,7 @@ class EcoConverter(BaseConverter):
             if i >= max_len:
                 break
             if row.Index.to_pydatetime().timestamp() == values[i][0][0]:
-                if np.isnan(row.active):
+                if isnan(row.active):
                     values[i][1] = [last_value + values[i][2]]
                 else:
                     last_value = row.active
@@ -30,7 +30,7 @@ class EcoConverter(BaseConverter):
     def create_dat_file(self, df, df_aggregate, file_name, building_name):
         dat_file = self.return_dat_file_path(self.dat_path + building_name, file_name)
 
-        file_values = np.empty((len(df), self.measuraments, self.features))
+        file_values = empty((len(df), self.measuraments, self.features))
 
         for i, row in enumerate(df.itertuples()):
             file_values[i][0] = [row.Index.to_pydatetime().timestamp()]
@@ -42,9 +42,54 @@ class EcoConverter(BaseConverter):
         dat_file.close()
 
         appliance_name = path.splitext(file_name)[0]
-        self.create_metadata(building_name, appliance_name, len(df), (self.dat_path + building_name + '/' + appliance_name + '.json'))
+        self.create_metadata(building_name, appliance_name, len(df),
+                             (self.dat_path + building_name + '/' + appliance_name + '.json'))
 
-    def convert_df(self, buildings_list):
+    def create_multiple_loads_file(self, df_aggregate, df_list, file_name, building_name):
+        features_name = ['active']
+
+        df_aggregate = self.rename_index(df_aggregate)
+        for values in self.all_features_combinations(features_name):
+            dat_file = self.return_dat_file_path(self.dat_path + '/' + building_name,
+                                                 '_'.join(values) + '_' + file_name)
+            file_values = empty((len(df_aggregate), len(df_list) + 2, len(values)))
+
+            for i, row in enumerate(df_aggregate.itertuples()):
+                file_values[i][1], file_values[i][0] = self.return_field_values(values, row)
+
+            for appliance_index, df_meter in enumerate(df_list):
+                df = self.rename_index(self.read_df(df_meter))
+                df_iterator = df.itertuples()
+                new_value = True
+                value = 0
+                i = 0
+                while True:
+                    if new_value:
+                        row = next(df_iterator, None)
+                        if row is None:
+                            break
+                        value, timestamp = self.return_field_values(values, row)
+                        new_value = False
+
+                    if timestamp[0] == file_values[i][0][0]:
+                        file_values[i][appliance_index + 2] = value
+                        new_value = True
+                    else:
+                        file_values[i][appliance_index + 2] = 0
+
+                    i += 1
+
+                    if len(file_values) <= i:
+                        break
+
+            dump(file_values, dat_file)
+            dat_file.close()
+
+            appliance_name = '_'.join(values) + '_' + path.splitext(file_name)[0]
+            self.create_metadata(building_name, appliance_name, len(df_aggregate),
+                                 (self.dat_path + '/' + building_name + '/' + appliance_name + '.json'))
+
+    def single_loads_convert(self, buildings_list):
         for value in buildings_list:
             if value == 1:
                 logging.info('Converting data from building 1...')
@@ -155,3 +200,40 @@ class EcoConverter(BaseConverter):
 
                 self.run_processes(self.create_dat_file, df_building, df_aggregate, '/building6')
                 logging.info('Conversion from building 6 finished.')
+
+    def multiple_loads_convert(self, buildings_list):
+        for value in buildings_list:
+            if value == 1:
+                logging.info('Converting data from building 1... (Multiple Loads)')
+                elec = self.read_dataset(self.dir_path + self.h5_file).buildings[1].elec
+
+                df_multiple_loads = [
+                    elec[8],
+                    elec[5],
+                    elec[4],
+                    elec[10],
+                    elec[9]
+                ]
+
+                self.create_multiple_loads_file(self.read_df(elec), df_multiple_loads, 'eco_5_loads_building_1.dat',
+                                                'building1')
+            elif value == 2:
+                logging.info('Converting data from building 2... (Multiple Loads)')
+                elec = self.read_dataset(self.dir_path + self.h5_file).buildings[2].elec
+
+                df_multiple_loads = [
+                    elec[8],
+                    elec[14],
+                    elec[9],
+                    elec[7],
+                    elec[15]
+                ]
+
+                self.create_multiple_loads_file(self.read_df(elec), df_multiple_loads, 'eco_5_loads_building_2.dat',
+                                                'building2')
+
+    def convert_df(self, buildings_list):
+        if self.single_loads:
+            self.single_loads_convert(buildings_list)
+        if self.multiple_loads:
+            self.multiple_loads_convert(buildings_list)

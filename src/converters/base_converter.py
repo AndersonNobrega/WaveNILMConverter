@@ -87,6 +87,12 @@ class BaseConverter:
     def return_field_values(self, features_list, row):
         values_row = []
         timestamp_row = []
+        if 'apparent' in features_list:
+            if isnan(row.power_apparent):
+                values_row.append(0)
+            else:
+                values_row.append(row.power_apparent)
+            timestamp_row.append(row.Index.to_pydatetime().timestamp())
         if 'active' in features_list:
             if isnan(row.power_active):
                 values_row.append(0)

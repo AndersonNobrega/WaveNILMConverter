@@ -2,7 +2,7 @@ from os import path
 from pickle import dump
 
 from converters.base_converter import BaseConverter
-from numpy import empty, copy, isnan
+from numpy import empty, isnan
 
 
 class IaweConverter(BaseConverter):
@@ -67,13 +67,13 @@ class IaweConverter(BaseConverter):
                             break
                         value, timestamp = self.return_field_values(values, row)
                         new_value = False
-                    
+
                     if timestamp[0] == file_values[i][0][0]:
                         file_values[i][appliance_index + 2] = value
                         new_value = True
                     else:
                         file_values[i][appliance_index + 2] = 0
-                    
+
                     i += 1
 
                     if len(file_values) <= i:
@@ -90,7 +90,7 @@ class IaweConverter(BaseConverter):
         elec = (list(self.read_dataset(self.dir_path + self.h5_file).buildings.values())[0]).elec
 
         if self.single_loads:
-            df_aggregate = self.read_df(elec)['power']
+            df_aggregate = self.read_df(elec, agregado=True)['power']
 
             df_list = [
                 [elec[3], 'fridge.dat'],
@@ -115,4 +115,5 @@ class IaweConverter(BaseConverter):
                 elec[10]
             ]
 
-            self.create_multiple_loads_file(self.read_df(elec), df_multiple_loads, 'iawe_5_loads.dat', 'building1')
+            self.create_multiple_loads_file(self.read_df(elec, agregado=True), df_multiple_loads, 'iawe_5_loads.dat',
+                                            'building1')
