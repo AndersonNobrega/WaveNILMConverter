@@ -5,18 +5,13 @@ wavenilm_env() {
     source $WAVENILM_PATH/bin/activate
 }
 
+converter_env() {
+    echo 'Changing to WaveNILMConverter env'
+    source $CONVERTER_PATH/bin/activate
+}
+
 deactivate_env() {
     deactivate
-}
-
-anaconda_env() {
-    echo 'Changing to Anaconda env'
-    source $HOME/anaconda3/bin/activate
-    conda activate nilmtk-practice
-}
-
-deactivate_anaconda_env() {
-    conda deactivate
 }
 
 run_wavenilm() {
@@ -37,7 +32,7 @@ run_wavenilm() {
             sample_size=$((($data_len + ($SAMPLE_SIZE_LIMIAR - 1)) / $SAMPLE_SIZE_LIMIAR))
         fi
         (cd $WAVENILM_PATH/src
-        python -m waveNILM with adam verbose=2 data_len=$data_len data_source=$(basename "$filename") dataset_name=$dataset agg_ind=[1] app_inds=[0,1,2,3,4] noise_mode=1 cross_validate=True n_epochs=$epochs val_spl=.15 splice=[1] batch_size=10 sample_size=$sample_size nb_filters=$config depth=$depth past_window_fraction=1.0 save_flag=False)
+        python -m waveNILM with adam verbose=2 data_len=$data_len data_source=$(basename "$filename") dataset_name=$dataset agg_ind=[1] app_inds=[0] noise_mode=1 cross_validate=False n_epochs=$epochs val_spl=.15 splice=[1] batch_size=8 sample_size=$sample_size nb_filters=$config depth=$depth past_window_fraction=1.0 save_flag=False)
     done
 }
 
@@ -69,6 +64,7 @@ remove_sample_folders() {
 # Constants
 SAMPLE_SIZE_LIMIAR=50
 WAVENILM_PATH=$HOME/envs/wavenilm
+CONVERTER_PATH=$HOME/envs/dataset-converter
 DATA_PATH=$WAVENILM_PATH/data
 PYTHONPATH=$WAVENILM_PATH/src export PYTHONPATH
 EPOCHS=(120)

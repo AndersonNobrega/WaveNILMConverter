@@ -1,17 +1,17 @@
 #!/bin/bash
 
 # Import functions and variables
-. $HOME/ProgrammingProjects/College/DatasetConverter/scripts/util/functions.sh
+. $CONVERTER_PATH/scripts/util/functions.sh
 
 # AMPDS Variables
-AMPDS_PATH="/media/anderson/HDD Partition/data/dat/ampds"
+AMPDS_PATH="/media/anderson/HDD_Linux/data/dat/ampds"
 AMPDS_RESULTS=$HOME/Documents/Results/AMPds
 AMPDS_NAME=AMPds
 
 # AMPDS
-anaconda_env
-python3 $HOME/ProgrammingProjects/College/DatasetConverter/src/main.py --ampds --dat "$AMPDS_PATH" -m
-deactivate_anaconda_env
+converter_env
+python3 $CONVERTER_PATH/src/main.py --ampds --dat "$AMPDS_PATH" -s
+deactivate_env
 
 move_dat_files "$AMPDS_PATH"
 

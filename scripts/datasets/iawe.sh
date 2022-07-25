@@ -1,17 +1,17 @@
 #!/bin/bash
 
 # Import functions and variables
-. $HOME/ProgrammingProjects/College/DatasetConverter/scripts/util/functions.sh
+. $CONVERTER_PATH/scripts/util/functions.sh
 
 # iAWE Variables
-IAWE_PATH="/media/anderson/HDD Partition/data/dat/iawe"
+IAWE_PATH="/media/anderson/HDD_Linux/data/dat/iawe"
 IAWE_RESULTS=$HOME/Documents/Results/iawe
 IAWE_NAME=iAWE
 
 # iAWE
-anaconda_env
-python3 $HOME/ProgrammingProjects/College/DatasetConverter/src/main.py --iawe --dat "$IAWE_PATH" -m
-deactivate_anaconda_env
+converter_env
+python3 $CONVERTER_PATH/src/main.py --iawe --dat "$IAWE_PATH" -m
+deactivate_env
 
 move_dat_files "$IAWE_PATH"
 

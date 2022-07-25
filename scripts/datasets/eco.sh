@@ -1,18 +1,18 @@
 #!/bin/bash
 
 # Import functions and variables
-. $HOME/ProgrammingProjects/College/DatasetConverter/scripts/util/functions.sh
+. $CONVERTER_PATH/scripts/util/functions.sh
 
 # ECO Variables
-ECO_PATH="/media/anderson/HDD Partition/data/dat/eco"
+ECO_PATH="/media/anderson/HDD_Linux/data/dat/eco"
 ECO_RESULTS=$HOME/Documents/Results/eco
 ECO_NAME=ECO
 
 # ECO
 # Building 1
-anaconda_env
-python3 $HOME/ProgrammingProjects/College/DatasetConverter/src/main.py --eco 1 --dat "$ECO_PATH" -m
-deactivate_anaconda_env
+converter_env
+python3 $CONVERTER_PATH/src/main.py --eco 1 --dat "$ECO_PATH" -m
+deactivate_env
 
 move_dat_files "$ECO_PATH/building1"
 
@@ -28,9 +28,9 @@ remove_dat_files "$ECO_PATH/building1"
 remove_sample_folders
 
 # Building 2
-anaconda_env
-python3 $HOME/ProgrammingProjects/College/DatasetConverter/src/main.py --eco 2 --dat "$ECO_PATH" -m
-deactivate_anaconda_env
+converter_env
+python3 $CONVERTER_PATH/src/main.py --eco 2 --dat "$ECO_PATH" -m
+deactivate_env
 
 move_dat_files "$ECO_PATH/building2"
 
@@ -46,9 +46,9 @@ remove_dat_files "$ECO_PATH/building2"
 remove_sample_folders
 
 # Building 3
-anaconda_env
-python3 $HOME/ProgrammingProjects/College/DatasetConverter/src/main.py --eco 3 --dat "$ECO_PATH" -m
-deactivate_anaconda_env
+converter_env
+python3 $CONVERTER_PATH/src/main.py --eco 3 --dat "$ECO_PATH" -m
+deactivate_env
 
 move_dat_files "$ECO_PATH/building3"
 
@@ -64,9 +64,9 @@ remove_dat_files "$ECO_PATH/building3"
 remove_sample_folders
 
 # Building 4
-anaconda_env
-python3 $HOME/ProgrammingProjects/College/DatasetConverter/src/main.py --eco 4 --dat "$ECO_PATH" -m
-deactivate_anaconda_env
+converter_env
+python3 $CONVERTER_PATH/src/main.py --eco 4 --dat "$ECO_PATH" -m
+deactivate_env
 
 move_dat_files "$ECO_PATH/building4"
 
@@ -82,9 +82,9 @@ remove_dat_files "$ECO_PATH/building4"
 remove_sample_folders
 
 # Building 5
-anaconda_env
-python3 $HOME/ProgrammingProjects/College/DatasetConverter/src/main.py --eco 5 --dat "$ECO_PATH" -m
-deactivate_anaconda_env
+converter_env
+python3 $CONVERTER_PATH/src/main.py --eco 5 --dat "$ECO_PATH" -m
+deactivate_env
 
 move_dat_files "$ECO_PATH/building5"
 
@@ -100,9 +100,9 @@ remove_dat_files "$ECO_PATH/building5"
 remove_sample_folders
 
 # Building 6
-anaconda_env
-python3 $HOME/ProgrammingProjects/College/DatasetConverter/src/main.py --eco 6 --dat "$ECO_PATH" -m
-deactivate_anaconda_env
+converter_env
+python3 $CONVERTER_PATH/src/main.py --eco 6 --dat "$ECO_PATH" -m
+deactivate_env
 
 move_dat_files "$ECO_PATH/building6"
 

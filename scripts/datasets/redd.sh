@@ -1,18 +1,18 @@
 #!/bin/bash
 
 # Import functions and variables
-. $HOME/ProgrammingProjects/College/DatasetConverter/scripts/util/functions.sh
+. $CONVERTER_PATH/scripts/util/functions.sh
 
 # REDD Variables
-REDD_PATH="/media/anderson/HDD Partition/data/dat/redd"
+REDD_PATH="/media/anderson/HDD_Linux/data/dat/redd"
 REDD_RESULTS=$HOME/Documents/Results/redd
 REDD_NAME=REDD
 
 # REDD
 # Building 1
-anaconda_env
-python3 $HOME/ProgrammingProjects/College/DatasetConverter/src/main.py --redd 1 --dat "$REDD_PATH" -m
-deactivate_anaconda_env
+converter_env
+python3 $CONVERTER_PATH/src/main.py --redd 1 --dat "$REDD_PATH" -m
+deactivate_env
 
 move_dat_files "$REDD_PATH/building1"
 
@@ -28,9 +28,9 @@ remove_dat_files "$REDD_PATH/building1"
 remove_sample_folders
 
 # Building 2
-anaconda_env
-python3 $HOME/ProgrammingProjects/College/DatasetConverter/src/main.py --redd 2 --dat "$REDD_PATH" -m
-deactivate_anaconda_env
+converter_env
+python3 $CONVERTER_PATH/src/main.py --redd 2 --dat "$REDD_PATH" -m
+deactivate_env
 
 move_dat_files "$REDD_PATH/building2"
 
@@ -46,9 +46,9 @@ remove_dat_files "$REDD_PATH/building2"
 remove_sample_folders
 
 # Building 3
-anaconda_env
-python3 $HOME/ProgrammingProjects/College/DatasetConverter/src/main.py --redd 3 --dat "$REDD_PATH" -m
-deactivate_anaconda_env
+converter_env
+python3 $CONVERTER_PATH/src/main.py --redd 3 --dat "$REDD_PATH" -m
+deactivate_env
 
 move_dat_files "$REDD_PATH/building3"
 
@@ -64,9 +64,9 @@ remove_dat_files "$REDD_PATH/building3"
 remove_sample_folders
 
 # Building 4
-anaconda_env
-python3 $HOME/ProgrammingProjects/College/DatasetConverter/src/main.py --redd 4 --dat "$REDD_PATH" -m
-deactivate_anaconda_env
+converter_env
+python3 $CONVERTER_PATH/src/main.py --redd 4 --dat "$REDD_PATH" -m
+deactivate_env
 
 move_dat_files "$REDD_PATH/building4"
 
@@ -82,9 +82,9 @@ remove_dat_files "$REDD_PATH/building4"
 remove_sample_folders
 
 # Building 5
-anaconda_env
-python3 $HOME/ProgrammingProjects/College/DatasetConverter/src/main.py --redd 5 --dat "$REDD_PATH" -m
-deactivate_anaconda_env
+converter_env
+python3 $CONVERTER_PATH/src/main.py --redd 5 --dat "$REDD_PATH" -m
+deactivate_env
 
 move_dat_files "$REDD_PATH/building5"
 
@@ -100,9 +100,9 @@ remove_dat_files "$REDD_PATH/building5"
 remove_sample_folders
 
 # Building 6
-anaconda_env
-python3 $HOME/ProgrammingProjects/College/DatasetConverter/src/main.py --redd 6 --dat "$REDD_PATH" -m
-deactivate_anaconda_env
+converter_env
+python3 $CONVERTER_PATH/src/main.py --redd 6 --dat "$REDD_PATH" -m
+deactivate_env
 
 move_dat_files "$REDD_PATH/building6"
 
